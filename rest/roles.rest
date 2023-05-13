@@ -1,0 +1,36 @@
+@dev = 
+
+@prod = 
+
+@local = http://localhost:3000
+
+###
+GET {{local}}/api/v1/roles
+
+
+###
+GET {{local}}/api/v1/roles/645e0bf83ad3840707a612f2
+
+
+###
+POST {{local}}/api/v1/roles
+Content-Type: application/json
+
+{
+  "name": "root",
+  "level": 0
+}
+
+
+###
+PUT {{local}}/api/v1/roles/645e0c0a1c7302dcc679bb0d
+Content-Type: application/json
+
+{
+  "name": "user",
+  "level": 3
+}
+
+
+###
+DELETE {{local}}/api/v1/roles/645f1ece32634e24dd828c4a

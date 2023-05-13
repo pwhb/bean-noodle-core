@@ -1,0 +1,19 @@
+@dev = 
+
+@prod = 
+
+@local = http://localhost:3000
+
+###
+GET {{local}}/api/v1/uploads/Key
+
+###
+GET {{local}}/api/v1/uploads/645e41e71cdb212d4be30811
+
+###
+GET {{local}}/api/v1/uploads/listS3
+
+###
+POST {{local}}/api/v1/uploads
+
+
