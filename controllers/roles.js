@@ -22,6 +22,7 @@ const createHandler = async function (request, reply) {
     const doc = await create(db, {
       name,
       level,
+      createdBy: request.user._id,
     });
     return reply.code(201).send({ success: true, data: doc });
   } catch (e) {

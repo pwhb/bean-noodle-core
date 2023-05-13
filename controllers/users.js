@@ -30,6 +30,7 @@ const createHandler = async function (request, reply) {
       email,
       avatar,
       roleId: new this.mongo.ObjectId(roleId),
+      createdBy: request.user._id,
     });
     return reply.code(201).send({ success: true, data: doc });
   } catch (e) {
@@ -47,6 +48,7 @@ const readHandler = async function (request, reply) {
     return reply.code(400).send({ success: false, error: e });
   }
 };
+
 const readOneHandler = async function (request, reply) {
   const { id } = request.params;
   try {
@@ -67,6 +69,43 @@ const readOneHandler = async function (request, reply) {
     return reply.code(400).send({ success: false, error: e });
   }
 };
+
+const loginHandler = async function (request, reply) {
+  try {
+    const db = this.mongo.db;
+    const { username, password } = request.body;
+    const doc = (
+      await read(db, {
+        match: { username },
+        project: {
+          _id: 1,
+          username: 1,
+          "role.name": 1,
+        },
+        limit: 1,
+      })
+    )[0];
+
+    if (!doc) {
+      return reply.code(404).send({
+        success: false,
+        error: {
+          message: "user doesn't exist",
+        },
+      });
+    }
+    return reply.code(200).send({
+      success: true,
+      data: {
+        token: this.jwt.sign(doc),
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    return reply.code(400).send({ success: false, error: e });
+  }
+};
+
 const updateHandler = async function (request, reply) {
   try {
     const { firstName, lastName, username, email, avatar, roleId } =
@@ -127,4 +166,5 @@ module.exports = {
   readOneHandler,
   updateHandler,
   deleteHandler,
+  loginHandler,
 };

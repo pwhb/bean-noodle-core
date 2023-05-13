@@ -2,6 +2,7 @@
 
 const path = require("path");
 const AutoLoad = require("@fastify/autoload");
+const { verifyJWT } = require("./middlewares/auth");
 
 // Pass --options via CLI arguments in command to enable these options.
 module.exports.options = {};
@@ -15,6 +16,14 @@ module.exports = async function (fastify, opts) {
     forceClose: true,
     url: process.env.EUREKA_DEV_MONGODB_URI,
   });
+
+  fastify.register(require("@fastify/jwt"), {
+    secret: process.env.AUTH_SECRET,
+  });
+
+  fastify.register(require("@fastify/auth"));
+  fastify.decorate("verifyJWT", verifyJWT);
+
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins

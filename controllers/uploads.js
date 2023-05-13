@@ -15,6 +15,7 @@ const createHandler = async function (request, reply) {
       const db = this.mongo.db;
       const _id = await create(db, {
         Key: Key,
+        createdBy: request.user._id,
       });
       return reply.code(200).send({
         success: true,
