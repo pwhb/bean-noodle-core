@@ -1,35 +1,28 @@
-const { hash } = require("bcrypt");
 const {
   create,
   read,
   readOne,
   update,
   deleteOne,
-} = require("../lib/api/users");
+} = require("../lib/api/templates");
 
 const createHandler = async function (request, reply) {
   try {
-    const { firstName, lastName, username, password, email, avatar, roleId } =
-      request.body;
+    const { name, category, body } = request.body;
     const db = this.mongo.db;
-    const alreadyExists = await db.collection("users").findOne({ username });
-
+    const alreadyExists = await db.collection("roles").findOne({ name });
     if (alreadyExists) {
       return {
         success: false,
         error: {
-          message: "user already exists",
+          message: "template already exists",
         },
       };
     }
     const doc = await create(db, {
-      firstName,
-      lastName,
-      username,
-      password: await hash(password, 10),
-      email,
-      avatar,
-      roleId: new this.mongo.ObjectId(roleId),
+      name,
+      category,
+      body,
       createdBy: new this.mongo.ObjectId(request.user._id),
     });
     return reply.code(201).send({ success: true, data: doc });
@@ -41,6 +34,7 @@ const createHandler = async function (request, reply) {
 
 const readHandler = async function (request, reply) {
   try {
+    const { category } = request.query;
     const db = this.mongo.db;
     const docs = await read(db);
     return reply.code(200).send({ success: true, data: docs });
@@ -51,8 +45,8 @@ const readHandler = async function (request, reply) {
 };
 
 const readOneHandler = async function (request, reply) {
-  const { id } = request.params;
   try {
+    const { id } = request.params;
     const db = this.mongo.db;
     const _id = new this.mongo.ObjectId(id);
     const doc = await readOne(db, _id);
@@ -60,7 +54,7 @@ const readOneHandler = async function (request, reply) {
       return reply.code(404).send({
         success: false,
         error: {
-          message: "user doesn't exist",
+          message: "template doesn't exist",
         },
       });
     }
@@ -71,46 +65,9 @@ const readOneHandler = async function (request, reply) {
   }
 };
 
-const loginHandler = async function (request, reply) {
-  try {
-    const db = this.mongo.db;
-    const { username, password } = request.body;
-    const doc = (
-      await read(db, {
-        match: { username },
-        project: {
-          _id: 1,
-          username: 1,
-          "role.name": 1,
-        },
-        limit: 1,
-      })
-    )[0];
-
-    if (!doc) {
-      return reply.code(404).send({
-        success: false,
-        error: {
-          message: "user doesn't exist",
-        },
-      });
-    }
-    return reply.code(200).send({
-      success: true,
-      data: {
-        token: this.jwt.sign(doc),
-      },
-    });
-  } catch (e) {
-    console.error(e);
-    return reply.code(400).send({ success: false, error: e });
-  }
-};
-
 const updateHandler = async function (request, reply) {
   try {
-    const { firstName, lastName, username, email, avatar, roleId } =
-      request.body;
+    const { name, category, body } = request.body;
     const { id } = request.params;
     const db = this.mongo.db;
     const _id = new this.mongo.ObjectId(id);
@@ -120,17 +77,14 @@ const updateHandler = async function (request, reply) {
       return {
         success: false,
         error: {
-          message: "user doesn't exist",
+          message: "template doesn't exist",
         },
       };
     }
     const doc = await update(db, _id, {
-      firstName,
-      lastName,
-      username,
-      email,
-      avatar,
-      roleId: new this.mongo.ObjectId(roleId),
+      name,
+      category,
+      body,
     });
     return reply.code(201).send({ success: true, data: doc });
   } catch (e) {
@@ -138,6 +92,7 @@ const updateHandler = async function (request, reply) {
     return reply.code(400).send({ success: false, error: e });
   }
 };
+
 const deleteHandler = async function (request, reply) {
   try {
     const { id } = request.params;
@@ -167,5 +122,4 @@ module.exports = {
   readOneHandler,
   updateHandler,
   deleteHandler,
-  loginHandler,
 };

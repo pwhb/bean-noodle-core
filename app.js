@@ -22,6 +22,7 @@ module.exports = async function (fastify, opts) {
   });
 
   fastify.register(require("@fastify/auth"));
+
   fastify.decorate("verifyJWT", verifyJWT);
 
   // Do not touch the following lines
