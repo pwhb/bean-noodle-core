@@ -12,7 +12,7 @@ const createHandler = async function (request, reply) {
       ContentType: file.mimetype,
     });
     if (res) {
-      const db = this.mongo.db;
+      const db = this.mongo.pwhb.db;
       const _id = await create(db, {
         Key: Key,
         createdBy: new this.mongo.ObjectId(request.user._id),
@@ -36,7 +36,7 @@ const createHandler = async function (request, reply) {
 
 const readHandler = async function (request, reply) {
   try {
-    const db = this.mongo.db;
+    const db = this.mongo.pwhb.db;
     const docs = await read(db);
 
     const mapped = docs.map((doc) => ({
@@ -53,7 +53,7 @@ const readHandler = async function (request, reply) {
 const readOneHandler = async function (request, reply) {
   const { id } = request.params;
   try {
-    const db = this.mongo.db;
+    const db = this.mongo.pwhb.db;
     const _id = new this.mongo.ObjectId(id);
     const doc = await readOne(db, _id);
     const res = await get(doc.Key);

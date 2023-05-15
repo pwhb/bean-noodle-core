@@ -11,7 +11,7 @@ const createHandler = async function (request, reply) {
   try {
     const { firstName, lastName, username, password, email, avatar, roleId } =
       request.body;
-    const db = this.mongo.db;
+    const db = this.mongo.pwhb.db;
     const alreadyExists = await db.collection("users").findOne({ username });
 
     if (alreadyExists) {
@@ -41,7 +41,7 @@ const createHandler = async function (request, reply) {
 
 const readHandler = async function (request, reply) {
   try {
-    const db = this.mongo.db;
+    const db = this.mongo.pwhb.db;
     const docs = await read(db);
     return reply.code(200).send({ success: true, data: docs });
   } catch (e) {
@@ -53,7 +53,7 @@ const readHandler = async function (request, reply) {
 const readOneHandler = async function (request, reply) {
   const { id } = request.params;
   try {
-    const db = this.mongo.db;
+    const db = this.mongo.pwhb.db;
     const _id = new this.mongo.ObjectId(id);
     const doc = await readOne(db, _id);
     if (!doc) {
@@ -73,7 +73,7 @@ const readOneHandler = async function (request, reply) {
 
 const loginHandler = async function (request, reply) {
   try {
-    const db = this.mongo.db;
+    const db = this.mongo.pwhb.db;
     const { username, password } = request.body;
     const doc = (
       await read(db, {
@@ -112,7 +112,7 @@ const updateHandler = async function (request, reply) {
     const { firstName, lastName, username, email, avatar, roleId } =
       request.body;
     const { id } = request.params;
-    const db = this.mongo.db;
+    const db = this.mongo.pwhb.db;
     const _id = new this.mongo.ObjectId(id);
     const alreadyExists = await readOne(db, _id);
 
@@ -141,7 +141,7 @@ const updateHandler = async function (request, reply) {
 const deleteHandler = async function (request, reply) {
   try {
     const { id } = request.params;
-    const db = this.mongo.db;
+    const db = this.mongo.pwhb.db;
     const _id = new this.mongo.ObjectId(id);
     const docs = await read(db, { match: { _id: _id }, limit: 1 });
     if (!docs[0]) {

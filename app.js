@@ -14,12 +14,21 @@ module.exports = async function (fastify, opts) {
 
   fastify.register(require("@fastify/mongodb"), {
     forceClose: true,
-    url: process.env.EUREKA_DEV_MONGODB_URI,
+    name: "pwhb",
+    url: process.env.PWHB_MONGODB_URI,
+  });
+
+  fastify.register(require("@fastify/mongodb"), {
+    forceClose: true,
+    name: "eureka",
+    url: process.env.EUREKA_MONGODB_URI,
   });
 
   fastify.register(require("@fastify/jwt"), {
     secret: process.env.AUTH_SECRET,
   });
+
+  fastify.register(require("@fastify/websocket"));
 
   fastify.register(require("@fastify/auth"));
 

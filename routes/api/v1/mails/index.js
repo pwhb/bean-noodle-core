@@ -8,7 +8,7 @@ module.exports = async function (fastify, opts) {
     handler: async function (request, reply) {
       try {
         const { from, to, subject, text } = request.body;
-        const db = this.mongo.db;
+        const db = this.mongo.pwhb.db;
         const html = getHtml("welcome.html", { name: "Nilar Win Htut" });
         const mailOptions = getMailOptions({ from, to, subject, text, html });
         await sendMail(mailOptions);
